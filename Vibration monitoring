@@ -1,0 +1,175 @@
+import time
+import os
+import sys
+import pandas as pd
+from matplotlib import pyplot as plt
+import smbus
+
+
+bus = smbus.SMBus(1)
+
+logge_tid = 2  # i sekunder
+filnavn = '/home/pi/ADXL355/vifte_3.csv'  # sett filnavn og lagringslokalisjon
+
+
+ ADXL355 Adresser og konstanter
+i2c_addr = 0x1D                        # adressen til ADXL355
+POWER_CTL = 0x2D
+POWER_CTL_OFF = 0x01
+POWER_CTL_ON = ~POWER_CTL_OFF
+
+RANGE = 0x2C                           # måleområde-register
+RANGE_MASK = 0x03
+RANGE_2G = 0b01
+RANGE_4G = 0b10
+RANGE_8G = 0b11
+
+LOWPASS_FILTER = 0x28                 # filter og ODR-register
+LOWPASS_FILTER_MASK = 0x0F
+ODR_4000 = 0b0000
+
+XDATA3 = 0x08                         # akselerasjonsdata-register
+XDATA2 = 0x09
+XDATA1 = 0x0A
+YDATA3 = 0x0B
+YDATA2 = 0x0C
+YDATA1 = 0x0D
+ZDATA3 = 0x0E
+ZDATA2 = 0x0F
+ZDATA1 = 0x10
+
+AXIS_START = XDATA3
+AXIS_LENGTH = 9
+
+STATUS = 0x04                         # statusregister
+STATUS_MASK_DATARDY = 0x01
+
+def isRunning():
+    powerCtl = bus.read_byte_data(i2c_addr, POWER_CTL)
+    return (powerCtl & POWER_CTL_OFF) != POWER_CTL_OFF
+
+def begin():
+    powerCtl = bus.read_byte_data(i2c_addr, POWER_CTL)
+    if (powerCtl & POWER_CTL_OFF) == POWER_CTL_OFF:
+        bus.write_byte_data(i2c_addr, POWER_CTL, (powerCtl & POWER_CTL_ON))
+
+def end():
+    powerCtl = bus.read_byte_data(i2c_addr, POWER_CTL)
+    if (powerCtl & POWER_CTL_OFF) != POWER_CTL_OFF:
+        bus.write_byte_data(i2c_addr, POWER_CTL, powerCtl | POWER_CTL_OFF)
+
+def getRange():
+    return (bus.read_byte_data(i2c_addr, RANGE)) & RANGE_MASK
+
+def setRange(newRange):  # newRange = RANGE_2G, RANGE_4G or RANGE_8G
+    if type(newRange) is not int:
+        raise ValueError('newRange must be an integer')
+
+    if newRange < RANGE_2G or newRange > RANGE_8G:
+        raise ValueError('newRange is out of range')
+    else:
+        Range = bus.read_byte_data(i2c_addr, RANGE)
+        Range = (Range & ~RANGE_MASK) | newRange
+        bus.write_byte_data(i2c_addr, RANGE, Range)
+
+def setLowpassFilter(newLowpassFilter):  # ODR_4000 = 0b000
+    if type(newLowpassFilter) is not int:
+        raise ValueError('newLowpassFilter must be an integer')
+    lowpassFilter = newLowpassFilter
+    bus.write_byte_data(i2c_addr, LOWPASS_FILTER, lowpassFilter)
+
+def getLowpassFilter():
+    return (bus.read_byte_data(i2c_addr, LOWPASS_FILTER) & LOWPASS_FILTER_MASK)
+
+def getAxes():
+    axisBytes = bus.read_i2c_block_data(i2c_addr, AXIS_START, AXIS_LENGTH)
+    
+    axisX = (axisBytes[0] << 16 | axisBytes[1] << 8 | axisBytes[2]) >> 4
+    axisY = (axisBytes[3] << 16 | axisBytes[4] << 8 | axisBytes[5]) >> 4
+    axisZ = (axisBytes[6] << 16 | axisBytes[7] << 8 | axisBytes[8]) >> 4
+    
+    if axisX & (1 << (20 - 1)):
+        axisX = axisX - (1 << 20)
+        
+    if axisY & (1 << (20 - 1)):
+        axisY = axisY - (1 << 20)
+        
+    if axisZ & (1 << (20 - 1)):
+        axisZ = axisZ - (1 << 20)
+        
+    return {'x': axisX, 'y': axisY, 'z': axisZ}
+
+def getStatus():
+    status = bus.read_byte_data(i2c_addr, STATUS)
+    return status & STATUS_MASK_DATARDY
+
+def lsb_g():
+    if getRange() == 1:
+        lsb_g = 256000
+        g_range = 2
+    elif getRange() == 2:
+        lsb_g = 128000
+        g_range = 4
+    elif getRange() == 3:
+        lsb_g = 64000
+        g_range = 8
+    return lsb_g, g_range
+
+
+if isRunning:
+    end()
+
+setRange(RANGE_2G)
+
+setLowpassFilter(ODR_4000)
+
+print("Logge tid", logge_tid, "sek")
+print("Range =", lsb_g()[1])
+
+if getLowpassFilter() == 0:
+    print("SampleRate = 4000Hz")
+else:
+    print("low SampleRate")
+
+begin()
+
+# Åpner fil og lager heading (Time, Accel_X_RAW, Accel_Y_RAW, Accel_Z_RAW) om den ikke allerede finnes.
+file = open(filnavn, "a")
+if os.stat(filnavn).st_size == 0:
+    file.write("Time,Accel_X_RAW,Accel_Y_RAW,Accel_Z_RAW\n")
+
+start = time.time()
+
+# Løkke som leser tid og vibrasjonsdata og skriver det inn i fila, for så å lukke koden når loggetiden er utløpt.
+while time.time() < start + logge_tid:
+    if getStatus() == 1:
+        now = round(time.time() - start, 6)
+        axes = getAxes()
+        x_accel_value = axes['x']
+        y_accel_value = axes['y']
+        z_accel_value = axes['z']
+        file.write(f"{now},{x_accel_value},{y_accel_value},{z_accel_value}\n")
+        file.flush()
+
+file.close()
+end()
+print("end")
+print("visualiserer")
+
+vib_data = pd.read_csv(filnavn)
+plt.figure(1)
+plt.plot(vib_data.Time, vib_data.Accel_X_RAW / lsb_g()[0] * 9.81)
+plt.plot(vib_data.Time, vib_data.Accel_Y_RAW / lsb_g()[0] * 9.81)
+plt.plot(vib_data.Time, vib_data.Accel_Z_RAW / lsb_g()[0] * 9.81)
+plt.legend(["x akse", "y akse", "z akse"])
+plt.title("Vibrasjon i m/s²")
+plt.xlabel("sek")
+plt.ylabel("mm/s²")
+plt.show()
+sys.exit()
+
+
+
+
+
+
