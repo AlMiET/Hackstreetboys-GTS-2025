@@ -8,3 +8,5 @@ Erlend Randen, Kjell Erik Kalsvik, Frode Østby, Olav Mære
 
 Tenkt å brukes som vibrasjonsovervåkning for fisk i helix for vaksinering.
 
+Programmeringsspråk Python.
+
