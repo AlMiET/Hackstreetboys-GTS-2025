@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registrering</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Hopp til innhold</a>
+  <header class="container">
+    <a href="index.html" class="button" style="margin-right:1rem;">Tilbake</a>
+    <h1>Registrering</h1>
+  </header>
+  <main id="main-content" class="container">
+    <form id="register-form" autocomplete="on">
+      <label for="reg-brukernavn">Brukernavn:</label>
+      <input type="text" id="reg-brukernavn" name="reg-brukernavn" required autocomplete="username">
+
+      <label for="reg-passord">Passord:</label>
+      <input type="password" id="reg-passord" name="reg-passord" required autocomplete="new-password">
+
+      <button type="submit" class="button">Registrer</button>
+    </form>
+    <div id="register-message" aria-live="polite"></div>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Logg inn</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Hopp til innhold</a>
+  <header class="container">
+    <a href="index.html" class="button" style="margin-right:1rem;">Tilbake</a>
+    <h1>Logg inn</h1>
+  </header>
+  <main id="main-content" class="container">
+    <form id="login-form" autocomplete="on">
+      <label for="brukernavn">Brukernavn:</label>
+      <input type="text" id="brukernavn" name="brukernavn" required autocomplete="username">
+
+      <label for="passord">Passord:</label>
+      <input type="password" id="passord" name="passord" required autocomplete="current-password">
+
+      <button type="submit" class="button">Logg inn</button>
+    </form>
+    <div id="login-message" aria-live="polite"></div>
+
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>

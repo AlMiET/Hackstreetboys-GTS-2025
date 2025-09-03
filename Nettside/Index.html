@@ -1,0 +1,104 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mobil Fiskevaksin Stasjoner</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Hopp til innhold</a>
+
+  <header role="banner" class="container">
+    <div>
+      <h1>Mobile Stasjoner FiskeVaks</h1>
+      <p>Vi gjør om sementbiler til mobile fiskevaksin-stasjoner</p>
+    </div>
+    <div class="header-buttons">
+      <button id="read-page" class="button" aria-label="Les opp siden">Les opp siden</button>
+      <button id="toggle-theme" class="button" aria-label="Bytt tema">Nattmodus</button>
+      <button id="decrease-text" class="button" aria-label="Mindre tekststørrelse">A-</button>
+      <button id="increase-text" class="button" aria-label="Større tekststørrelse">A+</button>
+    </div>
+  </header>
+
+  <nav role="navigation" aria-label="Hovedmeny" class="container">
+    <ul>
+      <li><a href="#om-oss">Om oss</a></li>
+      <li><a href="#tjenester">Tjenester</a></li>
+      <li><a href="#prosess">Prosess</a></li>
+      <li><a href="#kontakt">Kontakt</a></li>
+      <li><a href="login.html">Logg inn</a></li>
+      <li><a href="register.html">Registrering</a></li>
+    </ul>
+  </nav>
+
+  <main id="main-content" role="main" class="container">
+    <section class="hero" aria-labelledby="hero-title">
+      <img src="logo.png" alt="FiskeVaks logo" style="max-width:120px; height:auto; display:block; margin:0 auto 1rem auto;">
+      <h2 id="hero-title">Mobil fiskevaksinasjon rett til din lokalitet</h2>
+      <p>Effektivt, hygienisk og nøkkelferdig.</p>
+      <a href="#kontakt" class="button">Bestill demonstrasjon</a>
+    </section>
+
+    <section id="innlogging" aria-labelledby="innlogging-tittel">
+      <h2 id="innlogging-tittel">Kundeinnlogging</h2>
+      <form id="login-form" autocomplete="on">
+        <label for="brukernavn">Brukernavn:</label>
+        <input type="text" id="brukernavn" name="brukernavn" required autocomplete="username">
+
+        <label for="passord">Passord:</label>
+        <input type="password" id="passord" name="passord" required autocomplete="current-password">
+
+        <button type="submit" class="button">Logg inn</button>
+      </form>
+      <div id="login-message" aria-live="polite"></div>
+    </section>
+
+    <section id="registrering" aria-labelledby="registrering-tittel">
+      <h2 id="registrering-tittel">Registrer deg</h2>
+      <form id="register-form" autocomplete="on">
+        <label for="reg-brukernavn">Brukernavn:</label>
+        <input type="text" id="reg-brukernavn" name="reg-brukernavn" required autocomplete="username">
+
+        <label for="reg-passord">Passord:</label>
+        <input type="password" id="reg-passord" name="reg-passord" required autocomplete="new-password">
+
+        <button type="submit" class="button">Registrer</button>
+      </form>
+      <div id="register-message" aria-live="polite"></div>
+    </section>
+
+    <section id="om-oss" aria-labelledby="om-oss-tittel">
+      <h2 id="om-oss-tittel">Om oss</h2>
+      <p>Vi tilbyr mobile fiskevaksinasjonsstasjoner basert på ombygde sementbiler for effektiv og hygienisk vaksinering av fisk.</p>
+    </section>
+
+    <section id="tjenester" aria-labelledby="tjenester-tittel">
+      <h2 id="tjenester-tittel">Tjenester</h2>
+      <ul>
+        <li>Ombygging av kjøretøy til vaksinasjonsstasjoner</li>
+        <li>Transport og installasjon</li>
+        <li>Opplæring og support</li>
+      </ul>
+    </section>
+
+    <section id="prosess" aria-labelledby="prosess-tittel">
+      <h2 id="prosess-tittel">Vår prosess</h2>
+      <p>Vi følger en nøye planlagt prosess for å sikre kvalitet og effektivitet i alle ledd.</p>
+    </section>
+
+    <section id="kontakt" aria-labelledby="kontakt-tittel">
+      <h2 id="kontakt-tittel">Kontakt oss</h2>
+      <button class="button" onclick="window.open('kontaktinfo.html', '_blank')">E-post</button>
+    </section>
+  </main>
+
+  <footer role="contentinfo" class="container">
+    <p>&copy; 2025 FiskeVaks Mobile Stasjoner. Alle rettigheter reservert.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
